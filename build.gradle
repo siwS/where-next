@@ -29,9 +29,9 @@ dependencies {
             'org.springframework.boot:spring-boot-starter-web',
             'org.springframework.boot:spring-boot-starter-thymeleaf')
 
-    testCompile("org.springframework.boot:spring-boot-starter-test," +
+    testCompile("org.springframework.boot:spring-boot-starter-test",
             'org.junit.jupiter:junit-jupiter-api:5.3.1',
-    '        org.junit.jupiter:junit-jupiter-params:5.3.1',
+    		'org.junit.jupiter:junit-jupiter-params:5.3.1',
             'org.junit.jupiter:junit-jupiter-engine:5.3.1')
 }
 
