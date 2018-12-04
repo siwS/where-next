@@ -1,10 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Hello World!</title>
 </head>
 <body>
     <h1>Hello world!</h1>
+    <p th:text="'All the trips are: '" />
+    <ul th:each="trip : ${all_trips}">
+        <li><span th:text="${trip}"> Title </span></li>
+    </ul>
+
 </body>
 </html>
