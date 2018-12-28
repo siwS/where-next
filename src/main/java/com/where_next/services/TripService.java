@@ -5,6 +5,9 @@ import com.where_next.entities.Trip;
 import java.util.List;
 
 public interface TripService {
-    public List<Trip> getAllTrips();
-    public void addSampleTrip(String name);
+    Trip getTripById(Long id);
+    Trip getTripByName(String name);
+    List<Trip> getAllTrips();
+    Trip saveTrip(Trip trip);
+    void deleteTrip(Long id);
 }
