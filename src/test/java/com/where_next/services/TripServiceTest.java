@@ -5,6 +5,7 @@ import com.where_next.exceptions.DuplicateEntityException;
 import com.where_next.exceptions.EntityNotFoundException;
 import com.where_next.exceptions.InvalidInputParametersException;
 import com.where_next.repositories.TripRepository;
+import com.where_next.utils.TripUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,8 +15,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
-import java.util.Optional;
 
+import static com.where_next.utils.TripUtil.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -24,12 +25,8 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 public class TripServiceTest {
 
-    private static final Long TRIP_ID_1 = 1L;
-    private static final Long TRIP_ID_2 = 2L;
     private static final Long NON_EXISTING_TRIP_ID = 22222L;
     private static final String NON_EXISTING_TRIP_NAME = "Non existing trip name";
-    private static final String EXPECTED_FIRST_TRIP_NAME = "First test trip";
-    private static final String EXPECTED_SECOND_TRIP_NAME = "Second test trip";
     private static final String EXPECTED_EXCEPTION_ID = "Trip with id 22222 not found.";
     private static final String EXPECTED_EXCEPTION_NAME = "Trip with name 'Non existing trip name' not found.";
     private static final String EXPECTED_EXCEPTION_REQUIRED_NAME_IS_MISSING = "Required parameter 'name' is missing.";
@@ -45,13 +42,7 @@ public class TripServiceTest {
 
     @BeforeEach
     public void before() {
-        Trip firstTrip = createTrip(TRIP_ID_1, EXPECTED_FIRST_TRIP_NAME);
-        Trip secondTrip = createTrip(TRIP_ID_2, EXPECTED_SECOND_TRIP_NAME);
-        when(tripRepository.findById(TRIP_ID_1)).thenReturn(Optional.of(firstTrip));
-        when(tripRepository.findById(TRIP_ID_2)).thenReturn(Optional.of(secondTrip));
-        when(tripRepository.findByName(EXPECTED_FIRST_TRIP_NAME)).thenReturn(Optional.of(firstTrip));
-        when(tripRepository.findByName(EXPECTED_SECOND_TRIP_NAME)).thenReturn(Optional.of(secondTrip));
-        when(tripRepository.findAll()).thenReturn(List.of(firstTrip, secondTrip));
+        TripUtil.setUpTripRepositoryMock(tripRepository);
         when(tripRepository.existsById(TRIP_ID_2)).thenReturn(true);
     }
 
@@ -60,7 +51,7 @@ public class TripServiceTest {
         Trip trip = tripService.getTripById(TRIP_ID_1);
 
         assertEquals(trip.getId(), 1);
-        assertEquals(trip.getName(), EXPECTED_FIRST_TRIP_NAME);
+        assertEquals(trip.getName(), FIRST_TRIP_NAME);
     }
 
     @Test
@@ -74,10 +65,10 @@ public class TripServiceTest {
 
     @Test
     public void getTripByNameExisting() {
-        Trip trip = tripService.getTripByName(EXPECTED_FIRST_TRIP_NAME);
+        Trip trip = tripService.getTripByName(FIRST_TRIP_NAME);
 
         assertEquals(trip.getId(), 1);
-        assertEquals(trip.getName(), EXPECTED_FIRST_TRIP_NAME);
+        assertEquals(trip.getName(), FIRST_TRIP_NAME);
     }
 
     @Test
@@ -95,14 +86,14 @@ public class TripServiceTest {
 
         assertEquals(trips.size(), 2);
         assertEquals(trips.get(0).getId(), 1L);
-        assertEquals(trips.get(0).getName(), EXPECTED_FIRST_TRIP_NAME);
+        assertEquals(trips.get(0).getName(), FIRST_TRIP_NAME);
         assertEquals(trips.get(1).getId(), 2L);
-        assertEquals(trips.get(1).getName(), EXPECTED_SECOND_TRIP_NAME);
+        assertEquals(trips.get(1).getName(), SECOND_TRIP_NAME);
     }
 
     @Test
     public void saveTrip() {
-        Trip trip = createTrip(3L, NEW_TRIP_NAME);
+        Trip trip = TripUtil.createTrip(3L, NEW_TRIP_NAME);
         tripService.saveTrip(trip);
 
         verify(tripRepository, times(1)).save(trip);
@@ -110,7 +101,7 @@ public class TripServiceTest {
 
     @Test
     public void saveTripEmptyName() {
-        Trip trip = createTrip(3L, "");
+        Trip trip = TripUtil.createTrip(3L, "");
 
         InvalidInputParametersException exception = assertThrows(InvalidInputParametersException.class, () -> {
             tripService.saveTrip(trip);
@@ -121,7 +112,7 @@ public class TripServiceTest {
 
     @Test
     public void saveTripExisting() {
-        Trip trip = createTrip(2L, EXPECTED_SECOND_TRIP_NAME);
+        Trip trip = TripUtil.createTrip(2L, SECOND_TRIP_NAME);
 
         DuplicateEntityException exception = assertThrows(DuplicateEntityException.class, () -> {
             tripService.saveTrip(trip);
@@ -153,13 +144,5 @@ public class TripServiceTest {
         });
 
         assertEquals(EXPECTED_EXCEPTION_ID, exception.getMessage());
-    }
-
-    private Trip createTrip(long id, String name) {
-        Trip trip = new Trip();
-        trip.setId(id);
-        trip.setName(name);
-
-        return trip;
     }
 }
