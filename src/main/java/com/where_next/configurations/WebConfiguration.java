@@ -1,4 +1,4 @@
-package com.where_next.configuration;
+package com.where_next.configurations;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;

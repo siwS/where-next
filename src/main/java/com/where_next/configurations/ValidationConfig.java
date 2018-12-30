@@ -1,4 +1,4 @@
-package com.where_next.configuration;
+package com.where_next.configurations;
 
 import com.where_next.entities.Trip;
 import com.where_next.repositories.TripRepository;
